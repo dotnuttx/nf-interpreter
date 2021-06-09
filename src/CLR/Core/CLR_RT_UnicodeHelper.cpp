@@ -528,6 +528,35 @@ void CLR_RT_UnicodeHelper::ConvertFromUTF8( const std::string& src ,
     }
 }
 
+#endif
+
+#if defined(__linux__) || defined(__nuttx__)
+
+void CLR_RT_UnicodeHelper::ConvertToUTF8( const std::string& src ,
+                                          std::string&        dst )
+{
+    if(src.size())
+    {
+        dst = std::string(src.begin(), src.end());
+    }
+    else
+    {
+        dst.erase();
+    }
+}
+
+void CLR_RT_UnicodeHelper::ConvertFromUTF8( const std::string& src ,
+                                            std::string&      dst )
+{
+    if(src.size())
+    {
+        dst = std::string(src.begin(), src.end());
+    }
+    else
+    {
+        dst.erase();
+    }
+}
 
 #endif
 

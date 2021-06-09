@@ -25,7 +25,7 @@ void ClrReboot()
 }
 
 // the CLR Startup code on Windows version is different
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__linux__) && !defined(__nuttx__)
 
 struct Settings
 {

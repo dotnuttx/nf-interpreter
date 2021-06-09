@@ -428,7 +428,7 @@ bool CLR_DBG_Debugger::Monitor_Ping(WP_Message *msg)
 
         if (::Target_ConfigUpdateRequiresErase())
         {
-            cmdReply.Flags |= Monitor_Ping_c_ConfigBlockRequiresErase;
+             cmdReply.Flags |= Monitor_Ping_c_ConfigBlockRequiresErase;
         }
 
         // done, send reply
@@ -1486,7 +1486,7 @@ bool CLR_DBG_Debugger::Debugging_Execution_QueryCLRCapabilities(WP_Message *msg)
             if (::Target_ConfigUpdateRequiresErase())
             {
                 reply.u_capsFlags |= CLR_DBG_Commands::Debugging_Execution_QueryCLRCapabilities::
-                    c_CapabilityFlags_ConfigBlockRequiresErase;
+                     c_CapabilityFlags_ConfigBlockRequiresErase;
             }
 
             if (::Target_HasNanoBooter())
@@ -3273,13 +3273,12 @@ bool CLR_DBG_Debugger::Debugging_Resolve_Assembly(WP_Message *msg)
 
     if (assm)
     {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
         // append path
         if (assm->m_strPath != NULL)
         {
-            sprintf_s(
+            sprintf(
                 cmdReply.m_szName,
-                ARRAYSIZE(cmdReply.m_szName),
                 "%s,%s",
                 assm->m_szName,
                 assm->m_strPath->c_str());

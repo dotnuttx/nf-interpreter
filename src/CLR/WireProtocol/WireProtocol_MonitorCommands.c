@@ -8,7 +8,7 @@
 #include <nanoPAL_BlockStorage.h>
 #include <target_board.h>
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__linux__) && !defined(__nuttx__)
 
 // dummy implementation to allow build of nanoCLR
 __nfweak int AccessMemory(uint32_t location, uint32_t lengthInBytes, uint8_t *buffer, int32_t mode, uint32_t *errorCode)

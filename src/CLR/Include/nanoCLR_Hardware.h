@@ -11,7 +11,7 @@
 
 //--//
 
-#if defined(_WIN32)
+#if defined(_WIN32) | defined(__linux__) | defined(__nuttx__)
 #include "nanoCLR_Win32.h"
 #endif
 

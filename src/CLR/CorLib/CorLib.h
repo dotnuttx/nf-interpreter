@@ -14,7 +14,7 @@
 #include "corlib_native.h"
 #include "nanoCRT.h"
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__linux__) && !defined(__nuttx__)
 #include <nanoprintf.h>
 #endif // !defined(_WIN32)
 

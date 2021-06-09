@@ -15,7 +15,15 @@ typedef Library_sys_dev_gpio_native_System_Device_Gpio_PinValue PinValue;
 
 // declared here as external
 // the implementation will be moved here when Windows.Devices.Gpio is removed
-extern void Gpio_Interupt_ISR(GPIO_PIN pinNumber, bool pinState, void *pArg);
+// TODO: port to linux
+//extern void Gpio_Interupt_ISR(GPIO_PIN pinNumber, bool pinState, void *pArg);
+void Gpio_Interupt_ISR(GPIO_PIN pinNumber, bool pinState, void *pArg)
+{
+    (void)pArg;
+
+    // if handle registered then post a managed event with the current pin reading
+    PostManagedEvent(EVENT_GPIO, 0, (uint16_t)pinNumber, (uint32_t)pinState);
+}
 
 HRESULT Library_sys_dev_gpio_native_System_Device_Gpio_GpioPin::Read___SystemDeviceGpioPinValue(
     CLR_RT_StackFrame &stack)

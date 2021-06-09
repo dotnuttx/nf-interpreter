@@ -873,7 +873,7 @@ extern bool g_fDoNotUninitializeDebuggerPort;
 
 // platform_selector.h (from MasterConfig.h)
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined (__linux__) || defined(__nuttx__)
 
 #define GLOBAL_LOCK()
 #define GLOBAL_UNLOCK()

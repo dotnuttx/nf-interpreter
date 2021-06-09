@@ -11,7 +11,7 @@
 //#include <core.h>
 
 #include <corlib_native.h>
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__linux__) && !defined(__nuttx__)
 #include <nanoprintf.h>
 #endif // !defined(_WIN32)
 //#include <spot_net_native.h>

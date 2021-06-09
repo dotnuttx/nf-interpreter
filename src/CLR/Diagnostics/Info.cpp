@@ -7,9 +7,16 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if defined(__linux__) || defined(__nuttx__)
+#include <nanoCLR_Win32.h>
+
+static std::string s_messageString = "";
+#endif
+
 #if defined(_WIN32)
 
 #include <iostream>
+#include <string>
 #include <nanoCLR_Win32.h>
 
 static std::string *s_redirectedString = NULL;
@@ -156,11 +163,11 @@ void CLR_Debug::Emit(const char *text, int len)
 
         if (hFile == INVALID_HANDLE_VALUE)
         {
-            std::wstring file = s_CLR_RT_fTrace_RedirectOutput;
+            std::string file = s_CLR_RT_fTrace_RedirectOutput;
 
             if (s_CLR_RT_fTrace_RedirectLinesPerFile)
             {
-                wchar_t rgBuf[64];
+                char rgBuf[64];
 
                 swprintf(rgBuf, ARRAYSIZE(rgBuf), L".%08d", num++);
 
@@ -223,6 +230,10 @@ void CLR_Debug::Emit(const char *text, int len)
             Watchdog_Reset();
 #ifdef WIN32
             OutputDebugStringA(s_buffer);
+            HAL_Windows_Debug_Print(s_buffer);
+#endif
+
+#if defined(__linux__) || defined(__nutxx__)
             HAL_Windows_Debug_Print(s_buffer);
 #endif
 
@@ -312,7 +323,7 @@ int CLR_Debug::Printf(const char *format, ...)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 
 const CLR_UINT8 c_CLR_opParamSize[] = {
     4, // CLR_OpcodeParam_Field
@@ -1017,7 +1028,7 @@ const char *CLR_RT_DUMP::GETERRORMESSAGE(HRESULT hrError)
     return s_tmp;
 }
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 const char *CLR_RT_DUMP::GETERRORDETAIL()
 {
     return s_messageString.c_str();

@@ -7,7 +7,9 @@
 #ifndef _DRIVERS_SOCKETS_DECL_H_
 #define _DRIVERS_SOCKETS_DECL_H_ 1
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
+#include "stdafx.h"
+
 #define GLOBAL_LOCK_SOCKETS(x)
 #endif
 //--//

@@ -14,6 +14,8 @@
 #include <nanoSupport.h>
 #include <nanoWeak.h>
 
+typedef const char * LPCWSTR;
+
 struct CLR_RADIAN
 {
     short cos;
@@ -34,19 +36,42 @@ extern const CLR_RADIAN c_CLR_radians[];
 #include <comutil.h>
 #include <comip.h>
 
-typedef std::set<std::wstring> CLR_RT_StringSet;
+typedef std::set<std::string> CLR_RT_StringSet;
 typedef CLR_RT_StringSet::iterator CLR_RT_StringSetIter;
 
 typedef std::map<std::string, int> CLR_RT_StringMap;
 typedef CLR_RT_StringMap::iterator CLR_RT_StringMapIter;
 
-typedef std::vector<std::wstring> CLR_RT_StringVector;
+typedef std::vector<std::string> CLR_RT_StringVector;
 typedef CLR_RT_StringVector::iterator CLR_RT_StringVectorIter;
 
-typedef std::map<std::wstring, CLR_UINT32> CLR_RT_SymbolToAddressMap;
+typedef std::map<std::string, CLR_UINT32> CLR_RT_SymbolToAddressMap;
 typedef CLR_RT_SymbolToAddressMap::iterator CLR_RT_SymbolToAddressMapIter;
 
-typedef std::map<CLR_UINT32, std::wstring> CLR_RT_AddressToSymbolMap;
+typedef std::map<CLR_UINT32, std::string> CLR_RT_AddressToSymbolMap;
+typedef CLR_RT_AddressToSymbolMap::iterator CLR_RT_AddressToSymbolMapIter;
+
+#elif defined(__linux__) || defined(__nuttx__)
+
+#include <set>
+#include <map>
+#include <list>
+#include <string>
+#include <vector>
+
+typedef std::set<std::string> CLR_RT_StringSet;
+typedef CLR_RT_StringSet::iterator CLR_RT_StringSetIter;
+
+typedef std::map<std::string, int> CLR_RT_StringMap;
+typedef CLR_RT_StringMap::iterator CLR_RT_StringMapIter;
+
+typedef std::vector<std::string> CLR_RT_StringVector;
+typedef CLR_RT_StringVector::iterator CLR_RT_StringVectorIter;
+
+typedef std::map<std::string, CLR_UINT32> CLR_RT_SymbolToAddressMap;
+typedef CLR_RT_SymbolToAddressMap::iterator CLR_RT_SymbolToAddressMapIter;
+
+typedef std::map<CLR_UINT32, std::string> CLR_RT_AddressToSymbolMap;
 typedef CLR_RT_AddressToSymbolMap::iterator CLR_RT_AddressToSymbolMapIter;
 
 #else
@@ -62,6 +87,13 @@ typedef CLR_RT_AddressToSymbolMap::iterator CLR_RT_AddressToSymbolMapIter;
 #pragma pack(push, NANOCLR_RUNTIME_H, 4)
 #endif
 
+#if defined(__linux__) || defined(__nuttx__)
+
+typedef std::vector<CLR_UINT8> CLR_RT_Buffer;
+
+#endif
+
+// TODO: port to linux
 #if defined(_WIN32)
 //--//
 
@@ -82,7 +114,7 @@ class CLR_XmlUtil
     void Clean();
 
     HRESULT LoadPost(
-        /*[in] */ const wchar_t *szRootTag,
+        /*[in] */ const char *szRootTag,
         /*[out]*/ bool &fLoaded,
         /*[out]*/ bool *fFound);
 
@@ -90,8 +122,8 @@ class CLR_XmlUtil
 
   public:
     CLR_XmlUtil(/*[in]*/ const CLR_XmlUtil &xml);
-    CLR_XmlUtil(/*[in]*/ IXMLDOMDocument *xddDoc, /*[in]*/ const wchar_t *szRootTag = NULL);
-    CLR_XmlUtil(/*[in]*/ IXMLDOMNode *xdnRoot = NULL, /*[in]*/ const wchar_t *szRootTag = NULL);
+    CLR_XmlUtil(/*[in]*/ IXMLDOMDocument *xddDoc, /*[in]*/ const char *szRootTag = NULL);
+    CLR_XmlUtil(/*[in]*/ IXMLDOMNode *xdnRoot = NULL, /*[in]*/ const char *szRootTag = NULL);
 
     ~CLR_XmlUtil();
 
@@ -101,209 +133,213 @@ class CLR_XmlUtil
     HRESULT DumpError();
 
     HRESULT New(/*[in]*/ IXMLDOMNode *xdnRoot, /*[in] */ bool fDeep = false);
-    HRESULT New(/*[in]*/ const wchar_t *szRootTag, /*[in] */ const wchar_t *szEncoding = L"utf-8" /*L"unicode"*/);
+    HRESULT New(/*[in]*/ const char *szRootTag, /*[in] */ const char *szEncoding = L"utf-8" /*L"unicode"*/);
     HRESULT Load(
-        /*[in ]*/ const wchar_t *szFile,
-        /*[in]*/ const wchar_t *szRootTag,
+        /*[in ]*/ const char *szFile,
+        /*[in]*/ const char *szRootTag,
         /*[out]*/ bool &fLoaded,
         /*[out]*/ bool *fFound = NULL);
     HRESULT LoadAsStream(
         /*[in ]*/ IUnknown *pStream,
-        /*[in]*/ const wchar_t *szRootTag,
+        /*[in]*/ const char *szRootTag,
         /*[out]*/ bool &fLoaded,
         /*[out]*/ bool *fFound = NULL);
     HRESULT LoadAsString(
         /*[in ]*/ BSTR bstrData,
-        /*[in]*/ const wchar_t *szRootTag,
+        /*[in]*/ const char *szRootTag,
         /*[out]*/ bool &fLoaded,
         /*[out]*/ bool *fFound = NULL);
-    HRESULT Save(/*[in ]*/ const wchar_t *szFile);
+    HRESULT Save(/*[in ]*/ const char *szFile);
     HRESULT SaveAsStream(/*[out]*/ IUnknown **ppStream);
     HRESULT SaveAsString(/*[out]*/ BSTR *pbstrData);
 
     HRESULT SetTimeout(/*[in]*/ unsigned long dwTimeout);
     HRESULT Abort();
 
-    HRESULT SetVersionAndEncoding(/*[in]*/ const wchar_t *szVersion, /*[in]*/ const wchar_t *szEncoding);
+    HRESULT SetVersionAndEncoding(/*[in]*/ const char *szVersion, /*[in]*/ const char *szEncoding);
 
     HRESULT GetDocument(/*[out]*/ IXMLDOMDocument **pVal) const;
     HRESULT GetRoot(/*[out]*/ IXMLDOMNode **pVal) const;
-    HRESULT GetNodes(/*[in]*/ const wchar_t *szTag, /*[out]*/ IXMLDOMNodeList **pVal) const;
-    HRESULT GetNode(/*[in]*/ const wchar_t *szTag, /*[out]*/ IXMLDOMNode **pVal) const;
+    HRESULT GetNodes(/*[in]*/ const char *szTag, /*[out]*/ IXMLDOMNodeList **pVal) const;
+    HRESULT GetNode(/*[in]*/ const char *szTag, /*[out]*/ IXMLDOMNode **pVal) const;
     HRESULT CreateNode(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[out]*/ IXMLDOMNode **pVal,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
 
     HRESULT GetAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[out]*/ IXMLDOMAttribute **pValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT GetAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[out]*/ _bstr_t &bstrValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT GetAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
-        /*[out]*/ std::wstring &szValue,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
+        /*[out]*/ std::string &szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT GetAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[out]*/ signed int &lValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT GetValue(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[out]*/ _variant_t &vValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT GetValue(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[out]*/ _bstr_t &bstrValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT GetValue(
-        /*[in]*/ const wchar_t *szTag,
-        /*[out]*/ std::wstring &szValue,
+        /*[in]*/ const char *szTag,
+        /*[out]*/ std::string &szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
 
     HRESULT ModifyAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[in] */ const _bstr_t &bstrValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT ModifyAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
-        /*[in] */ const std::wstring &szValue,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
+        /*[in] */ const std::string &szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT ModifyAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
-        /*[in] */ const wchar_t *szValue,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
+        /*[in] */ const char *szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT ModifyAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[in] */ signed int lValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT ModifyValue(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[in] */ const _variant_t &vValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT ModifyValue(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[in] */ const _bstr_t &bstrValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT ModifyValue(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in] */ const std::wstring &szValue,
+        /*[in]*/ const char *szTag,
+        /*[in] */ const std::string &szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
 
     HRESULT PutAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[in] */ IXMLDOMAttribute **pValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[in] */ const _bstr_t &bstrValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
-        /*[in] */ const std::wstring &szValue,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
+        /*[in] */ const std::string &szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
-        /*[in] */ const wchar_t *szValue,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
+        /*[in] */ const char *szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[in] */ signed int lValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutValue(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[in] */ const _variant_t &vValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutValue(
-        /*[in]*/ const wchar_t *szTag,
+        /*[in]*/ const char *szTag,
         /*[in] */ const _bstr_t &bstrValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutValue(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in] */ const std::wstring &szValue,
+        /*[in]*/ const char *szTag,
+        /*[in] */ const std::string &szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
     HRESULT PutValue(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in] */ const wchar_t *szValue,
+        /*[in]*/ const char *szTag,
+        /*[in] */ const char *szValue,
         /*[out]*/ bool &fFound,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
 
     HRESULT RemoveAttribute(
-        /*[in]*/ const wchar_t *szTag,
-        /*[in]*/ const wchar_t *szAttr,
+        /*[in]*/ const char *szTag,
+        /*[in]*/ const char *szAttr,
         /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
-    HRESULT RemoveValue(/*[in]*/ const wchar_t *szTag, /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
-    HRESULT RemoveNode(/*[in]*/ const wchar_t *szTag, /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
+    HRESULT RemoveValue(/*[in]*/ const char *szTag, /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
+    HRESULT RemoveNode(/*[in]*/ const char *szTag, /*[in]*/ IXMLDOMNode *pxdnNode = NULL);
 };
 
 //--//
+
+#endif
+
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 
 typedef std::vector<CLR_UINT8> CLR_RT_Buffer;
 
 struct CLR_RT_FileStore
 {
-    static HRESULT LoadFile(const wchar_t *szFile, CLR_RT_Buffer &vec);
-    static HRESULT SaveFile(const wchar_t *szFile, const CLR_RT_Buffer &vec);
-    static HRESULT SaveFile(const wchar_t *szFile, const CLR_UINT8 *buf, size_t size);
+    static HRESULT LoadFile(const char *szFile, CLR_RT_Buffer &vec);
+    static HRESULT SaveFile(const char *szFile, const CLR_RT_Buffer &vec);
+    static HRESULT SaveFile(const char *szFile, const CLR_UINT8 *buf, size_t size);
 
     static HRESULT ExtractTokensFromFile(
-        const wchar_t *szFileName,
+        const char *szFileName,
         CLR_RT_StringVector &vec,
-        const wchar_t *separators = L" \t",
+        const char *separators = " \t",
         bool fNoComments = true);
 
     static void ExtractTokens(
         const CLR_RT_Buffer &buf,
         CLR_RT_StringVector &vec,
-        const wchar_t *separators = L" \t",
+        const char *separators = " \t",
         bool fNoComments = true);
     static void ExtractTokensFromBuffer(
-        wchar_t *szLine,
+        char *szLine,
         CLR_RT_StringVector &vec,
-        const wchar_t *separators = L" \t",
+        const char *separators = " \t",
         bool fNoComments = true);
     static void ExtractTokensFromString(
-        const wchar_t *szLine,
+        const char *szLine,
         CLR_RT_StringVector &vec,
-        const wchar_t *separators = L" \t");
+        const char *separators = " \t");
 };
 
 #endif
@@ -572,14 +608,14 @@ extern int s_CLR_RT_fTrace_GC_Depth;
 extern int s_CLR_RT_fTrace_SimulateSpeed;
 extern int s_CLR_RT_fTrace_AssemblyOverhead;
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 extern int s_CLR_RT_fTrace_ARM_Execution;
 
 extern int s_CLR_RT_fTrace_RedirectLinesPerFile;
-extern std::wstring s_CLR_RT_fTrace_RedirectOutput;
-extern std::wstring s_CLR_RT_fTrace_RedirectCallChain;
+extern std::string s_CLR_RT_fTrace_RedirectOutput;
+extern std::string s_CLR_RT_fTrace_RedirectCallChain;
 
-extern std::wstring s_CLR_RT_fTrace_HeapDump_FilePrefix;
+extern std::string s_CLR_RT_fTrace_HeapDump_FilePrefix;
 extern bool s_CLR_RT_fTrace_HeapDump_IncludeCreators;
 
 extern bool s_CLR_RT_fTimeWarp;
@@ -939,9 +975,9 @@ struct CLR_RT_UnicodeHelper
 
     bool MoveBackwardInUTF8(const char *utf8StringStart, int iMaxChars);
 
-#if defined(_WIN32)
-    static void ConvertToUTF8(const std::wstring &src, std::string &dst);
-    static void ConvertFromUTF8(const std::string &src, std::wstring &dst);
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
+    static void ConvertToUTF8(const std::string &src, std::string &dst);
+    static void ConvertFromUTF8(const std::string &src, std::string &dst);
 #endif
 };
 
@@ -958,9 +994,9 @@ class UnicodeString
     ~UnicodeString();
 
     HRESULT Assign(const char *string);
-    operator const wchar_t *()
+    operator const char *()
     {
-        return (const wchar_t *)m_wCharArray;
+        return (const char *)m_wCharArray;
     }
     unsigned int Length()
     {
@@ -1188,12 +1224,12 @@ struct CLR_RT_Assembly : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOCAT
         *m_pDebuggingInfo_MethodDef; // EVENT HEAP - NO RELOCATION - (but the data they point to has to be relocated)
 #endif                               //#if defined(NANOCLR_ENABLE_SOURCELEVELDEBUGGING)
 
-#if defined(NANOCLR_TRACE_STACK_HEAVY) && defined(_WIN32)
+#if defined(NANOCLR_TRACE_STACK_HEAVY) && (defined(_WIN32) || defined(__linux__) || defined(__nuttx__)) 
     int m_maxOpcodes;
     int *m_stackDepth;
 #endif
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
     std::string *m_strPath;
 #endif
 
@@ -1203,10 +1239,10 @@ struct CLR_RT_Assembly : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOCAT
 
     bool IsSameAssembly(const CLR_RT_Assembly &assm) const;
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 
     static void InitString(std::map<std::string, CLR_OFFSET> &map);
-    static HRESULT CreateInstance(const CLR_RECORD_ASSEMBLY *data, CLR_RT_Assembly *&assm, const wchar_t *szName);
+    static HRESULT CreateInstance(const CLR_RECORD_ASSEMBLY *data, CLR_RT_Assembly *&assm, const char *szName);
 
 #endif
 
@@ -1351,13 +1387,13 @@ struct CLR_RT_Assembly : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOCAT
 
     //--//
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
     static FILE *s_output;
     static FILE *s_toclose;
 
   public:
-    static void Dump_SetDevice(FILE *&outputDeviceFile, const wchar_t *szFileName);
-    static void Dump_SetDevice(const wchar_t *szFileName);
+    static void Dump_SetDevice(FILE *&outputDeviceFile, const char *szFileName);
+    static void Dump_SetDevice(const char *szFileName);
 
     static void Dump_CloseDevice(FILE *&outputDeviceFile);
     static void Dump_CloseDevice();
@@ -1372,8 +1408,8 @@ struct CLR_RT_Assembly : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOCAT
     unsigned int GenerateSignatureForNativeMethods();
 
     bool AreInternalMethodsPresent(const CLR_RECORD_TYPEDEF *td);
-    void GenerateSkeleton(const wchar_t *szFileName, const wchar_t *szProjectName);
-    void GenerateSkeletonFromComplientNames(const wchar_t *szFileName, const wchar_t *szProjectName);
+    void GenerateSkeleton(const char *szFileName, const char *szProjectName);
+    void GenerateSkeletonFromComplientNames(const char *szFileName, const char *szProjectName);
 
     void BuildParametersList(CLR_PMETADATA pMetaData, CLR_RT_VectorOfManagedElements &elemPtrArray);
     void GenerateSkeletonStubFieldsDef(
@@ -1381,7 +1417,7 @@ struct CLR_RT_Assembly : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOCAT
         FILE *pFileStubHead,
         std::string strIndent,
         std::string strMngClassName);
-    void GenerateSkeletonStubCode(const wchar_t *szFilePath, FILE *pFileDotNetProj);
+    void GenerateSkeletonStubCode(const char *szFilePath, FILE *pFileDotNetProj);
 
     void BuildMethodName_NoInterop(const CLR_RECORD_METHODDEF *md, std::string &name, CLR_RT_StringMap &mapMethods);
     void GenerateSkeleton_NoInterop(LPCWSTR szFileName, LPCWSTR szProjectName);
@@ -1393,7 +1429,7 @@ struct CLR_RT_Assembly : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOCAT
 
 #endif
   private:
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
     void Dump_Token(CLR_UINT32 tk);
     void Dump_FieldOwner(CLR_UINT32 idx);
     void Dump_MethodOwner(CLR_UINT32 idx);
@@ -1844,8 +1880,8 @@ struct CLR_RT_TypeSystem // EVENT HEAP - NO RELOCATION -
     static CLR_DataType MapElementTypeToDataType(CLR_UINT32 et);
     static CLR_UINT32 MapDataTypeToElementType(CLR_DataType dt);
 
-#if defined(_WIN32)
-    void Dump(const wchar_t *szFileName, bool fNoByteCode);
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
+    void Dump(const char *szFileName, bool fNoByteCode);
 #endif
 
     //--//
@@ -2601,7 +2637,7 @@ struct CLR_RT_GarbageCollector
 
     bool m_fOutOfStackSpaceForGC;
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
     CLR_UINT32 m_events;
 #endif
 
@@ -3204,7 +3240,7 @@ struct CLR_RT_EventCache
 
         //--//
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
         void DumpTree();
         bool ConsistencyCheck();
         bool ConsistencyCheck(LookupEntry *node, int &depth);
@@ -3643,7 +3679,7 @@ struct CLR_RT_ExecutionEngine
     CLR_UINT32 WaitForActivity(CLR_UINT32 powerLevel, CLR_UINT32 events, CLR_INT64 timeout_ms);
     CLR_UINT32 WaitForActivity();
 
-    HRESULT Execute(wchar_t *entryPointArgs, int maxContextSwitch);
+    HRESULT Execute(char *entryPointArgs, int maxContextSwitch);
 
     HRESULT WaitForDebugger();
 
@@ -3807,8 +3843,8 @@ struct CLR_RT_ExecutionEngine
 
     CLR_UINT32 WaitSystemEvents(CLR_UINT32 powerLevel, CLR_UINT32 events, CLR_INT64 timeExpire);
 
-#if defined(_WIN32)
-    HRESULT CreateEntryPointArgs(CLR_RT_HeapBlock &args, wchar_t *szCommandLineArgs);
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
+    HRESULT CreateEntryPointArgs(CLR_RT_HeapBlock &args, char *szCommandLineArgs);
 #endif
 
     // The lowest value for execution counter in threads.

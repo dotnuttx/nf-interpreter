@@ -16,7 +16,7 @@ extern "C"
 {
 #ifdef DeviceFamily_CC3220
 #include <targetSimpleLinkCC32xx_Sntp.h>
-#elif defined(_WIN32)
+#elif defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 // empty on purpose
 #else
 #include <apps/sntp.h>

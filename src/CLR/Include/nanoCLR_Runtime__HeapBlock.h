@@ -66,7 +66,12 @@
 //
 struct CLR_RT_HeapBlock_Raw
 {
+// in fact it should be defined architecture dependent
+#if defined(__linux__)
+    CLR_UINT32 data[6];
+#else
     CLR_UINT32 data[3];
+#endif
 };
 
 #ifdef __GNUC__

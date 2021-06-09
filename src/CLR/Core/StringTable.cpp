@@ -32,7 +32,7 @@ const char* CLR_RT_Assembly::GetString( CLR_STRING i )
     return &(((const char*)GetTable( TBL_Strings ))[ i ]);
 }
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 
 void CLR_RT_Assembly::InitString( std::map<std::string,CLR_OFFSET>& map )
 {

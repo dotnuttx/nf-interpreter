@@ -232,6 +232,18 @@ int hal_vsnprintf( char* buffer, size_t len, const char* format, va_list arg );
 #define hal_strlen_s(str) strlen(str)
 #define hal_strncmp_s(str1, str2, num) strncmp(str1, str2, num)
 
+#elif defined(__linux__) || defined(__nuttx__)
+
+int hal_vprintf( const char* format, va_list arg );
+int hal_vfprintf( COM_HANDLE stream, const char* format, va_list arg );
+int hal_snprintf( char* buffer, size_t len, const char* format, ... );
+int hal_vsnprintf( char* buffer, size_t len, const char* format, va_list arg );
+int hal_strncpy_s ( char* strDst, size_t sizeInBytes, const char* strSrc, size_t count );
+int hal_strcpy_s (char* strDst, size_t sizeInBytes, const char* strSrc);
+
+#define hal_strlen_s(str) strlen(str)
+#define hal_strncmp_s(str1, str2, num) strncmp(str1, str2, num)
+
 #else
 !ERROR
 #endif

@@ -10,6 +10,9 @@
 #include <targetHAL_Time.h>
 #include "WireProtocol_Message.h"
 
+// TODO: port to linux
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
 // from nanoHAL_Time.h
 #define TIME_CONVERSION__TO_SYSTICKS 10000
 
