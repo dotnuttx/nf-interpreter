@@ -168,7 +168,9 @@
   private:                                                                                                             \
     cls(cls &);                                                                                                        \
     cls &operator=(const cls &)
+#endif
 
+#if defined(_WIN32)
 #define LONGLONGCONSTANT(v)  (v##I64)
 #define ULONGLONGCONSTANT(v) (v##UI64)
 #endif

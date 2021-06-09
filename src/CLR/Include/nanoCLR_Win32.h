@@ -6,6 +6,8 @@
 #ifndef NANOCLR_WIN32_H
 #define NANOCLR_WIN32_H
 
+#include <stdint.h>
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void HAL_Windows_FastSleep( signed __int64 ticks );
@@ -16,11 +18,13 @@ void HAL_Windows_AcquireGlobalLock();
 void HAL_Windows_ReleaseGlobalLock();
 bool HAL_Windows_HasGlobalLock();
 
-unsigned __int64 HAL_Windows_GetPerformanceTicks();
+uint64_t HAL_Windows_GetPerformanceTicks();
 
 void HAL_Windows_Debug_Print( char* szText );
                         
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#if defined(_WIN32)
 
 class HAL_Mutex
 {
@@ -35,6 +39,8 @@ public:
     void Lock  ();
     void Unlock();
 };
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
