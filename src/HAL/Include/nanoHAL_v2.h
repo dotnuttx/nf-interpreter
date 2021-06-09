@@ -256,7 +256,7 @@ extern "C"
 #define HAL_COMPLETION_IDLE_VALUE 0x0000FFFFFFFFFFFFull
 
 // provide platform dependent delay to CLR code
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 #define OS_DELAY(milliSecs) ;
 #else
 #define OS_DELAY(milliSecs) PLATFORM_DELAY(milliSecs)
@@ -329,7 +329,8 @@ extern "C"
 // The possible problem with the macro - it creates multiple identical typedefs.
 // It is not a problem in global scope, but if macro is used inside of struct - it generates warnings.
 // CT_ASSERT_UNIQUE_NAME is the same in essence, but it provides a way to customize the name of the type.
-#define CT_ASSERT_UNIQUE_NAME(e, name) typedef char __CT_ASSERT__##name[(e) ? 1 : -1];
+// TODO: check this __nuttx__ __linux__
+#define CT_ASSERT_UNIQUE_NAME(e, name) typedef char __CT_ASSERT__##name[(e) ? 1 : 1];
 #define CT_ASSERT(e)                   CT_ASSERT_UNIQUE_NAME(e, nanoclr)
 #endif
 
@@ -341,12 +342,6 @@ extern "C"
 #if !defined(BUILD_RTM)
 
     void debug_printf(const char *format, ...);
-
-#else
-
-__inline void debug_printf(const char *format, ...)
-{
-}
 
 #endif // !defined(BUILD_RTM)
 
