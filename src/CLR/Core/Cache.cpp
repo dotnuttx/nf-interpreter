@@ -232,7 +232,7 @@ bool CLR_RT_EventCache::VirtualMethodTable::FindVirtualMethod(
     CLR_UINT32 clsData = cls.m_data;
     CLR_UINT32 mdVirtualData = mdVirtual.m_data;
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
     bool fVerify = false;
 
     {
@@ -276,6 +276,15 @@ bool CLR_RT_EventCache::VirtualMethodTable::FindVirtualMethod(
             }
 #endif
 
+#if defined(__linux__) || defined(__nuttx__)
+            if(fVerify != true)
+            {
+                CLR_Debug::Printf( "INTERNAL ERROR: Shortcut for terminal virtual methods failed: CLS:%08x:%08x => %08x\r\n", cls.m_data, mdVirtual.m_data, md.m_data );
+                // TODO: port to linux?
+                //::DebugBreak();
+            }
+#endif
+
             md = mdVirtual;
 
             return true;
@@ -290,6 +299,18 @@ bool CLR_RT_EventCache::VirtualMethodTable::FindVirtualMethod(
             cls.m_data,
             mdVirtual.m_data);
         ::DebugBreak();
+    }
+#endif
+
+#ifdef defined(__linux__) || defined(__nuttx__)
+    if(fVerify != false)
+    {
+        CLR_Debug::Printf( 
+            "INTERNAL ERROR: Shortcut for terminal virtual methods failed: CLS:%08x:%08x\r\n",
+            cls.m_data,
+            mdVirtual.m_data );
+        // TODO: port to linux?
+        //::DebugBreak();
     }
 #endif
 

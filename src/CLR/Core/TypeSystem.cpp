@@ -17,7 +17,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 #define NANOCLR_TRACE_DEFAULT(win, arm) (win)
 #else
 #define NANOCLR_TRACE_DEFAULT(win, arm) (arm)
@@ -47,7 +47,7 @@ int s_CLR_RT_fTrace_MemoryStats = NANOCLR_TRACE_DEFAULT(c_CLR_RT_Trace_Info, c_C
 int s_CLR_RT_fTrace_GC = NANOCLR_TRACE_DEFAULT(c_CLR_RT_Trace_None, c_CLR_RT_Trace_None);
 #endif
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
 int s_CLR_RT_fTrace_SimulateSpeed = NANOCLR_TRACE_DEFAULT(c_CLR_RT_Trace_Info, c_CLR_RT_Trace_None);
 #endif
 
@@ -55,18 +55,18 @@ int s_CLR_RT_fTrace_SimulateSpeed = NANOCLR_TRACE_DEFAULT(c_CLR_RT_Trace_Info, c
 int s_CLR_RT_fTrace_AssemblyOverhead = NANOCLR_TRACE_DEFAULT(c_CLR_RT_Trace_Info, c_CLR_RT_Trace_Info);
 #endif
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
 int s_CLR_RT_fTrace_StopOnFAILED = NANOCLR_TRACE_DEFAULT(c_CLR_RT_Trace_None, c_CLR_RT_Trace_None);
 #endif
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
 int s_CLR_RT_fTrace_ARM_Execution = 0;
 
 int s_CLR_RT_fTrace_RedirectLinesPerFile;
-std::wstring s_CLR_RT_fTrace_RedirectOutput;
-std::wstring s_CLR_RT_fTrace_RedirectCallChain;
+std::string s_CLR_RT_fTrace_RedirectOutput;
+std::string s_CLR_RT_fTrace_RedirectCallChain;
 
-std::wstring s_CLR_RT_fTrace_HeapDump_FilePrefix;
+std::string s_CLR_RT_fTrace_HeapDump_FilePrefix;
 bool s_CLR_RT_fTrace_HeapDump_IncludeCreators = false;
 
 bool s_CLR_RT_fTimeWarp = false;
@@ -1387,7 +1387,7 @@ bool CLR_RECORD_ASSEMBLY::GoodAssembly() const
     return SUPPORT_ComputeCRC(&this[1], this->TotalSize() - sizeof(*this), 0) == this->assemblyCRC;
 }
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
 
 void CLR_RECORD_ASSEMBLY::ComputeCRC()
 {
@@ -1776,11 +1776,11 @@ HRESULT CLR_RT_Assembly::CreateInstance(const CLR_RECORD_ASSEMBLY *header, CLR_R
     NANOCLR_NOCLEANUP();
 }
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
 HRESULT CLR_RT_Assembly::CreateInstance(
     const CLR_RECORD_ASSEMBLY *header,
     CLR_RT_Assembly *&assm,
-    const wchar_t *szName)
+    const char *szName)
 {
     NATIVE_PROFILE_CLR_CORE();
     NANOCLR_HEADER();
@@ -1857,7 +1857,7 @@ void CLR_RT_Assembly::DestroyInstance()
         g_CLR_RT_TypeSystem.m_assemblies[m_idx - 1] = NULL;
     }
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
     if (this->m_strPath != NULL)
     {
         delete this->m_strPath;
@@ -2994,7 +2994,7 @@ HRESULT CLR_RT_Assembly::PrepareForExecution()
         {
             CLR_PMETADATA ptr = GetResourceData(m_header->patchEntryOffset);
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__linux__) || defined(__nuttx__)
             CLR_Debug::Printf("Simulating jump into patch code...\r\n");
 #else
             ((void (*)())ptr)();
@@ -3755,7 +3755,7 @@ bool CLR_RT_TypeSystem::FindTypeDef(const char *szClass, CLR_RT_Assembly *assm, 
 //--//
 
 int
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(__linux__) || defined(__nuttx__)
     __cdecl
 #endif
     CompareResource(const void *p1, const void *p2)
@@ -3885,7 +3885,7 @@ HRESULT CLR_RT_TypeSystem::ResolveAll()
 
         if (fOutput == true)
         {
-            NANOCLR_SET_AND_LEAVE(CLR_E_TYPE_UNAVAILABLE);
+             NANOCLR_SET_AND_LEAVE(CLR_E_TYPE_UNAVAILABLE);
         }
 
         if (fGot == false)

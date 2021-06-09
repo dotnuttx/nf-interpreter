@@ -17,8 +17,10 @@
 #include <target_common.h>
 #endif
 
+#if !defined(__linux__) && !defined(__nuttx__)
 #ifndef min
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
+#endif
 #endif
 
 #ifndef ARRAYSIZE

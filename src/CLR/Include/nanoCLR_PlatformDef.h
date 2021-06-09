@@ -95,6 +95,11 @@
 #define NANOCLR_VALIDATE_HEAP NANOCLR_VALIDATE_HEAP_0_None
 #endif
 
+
+#if defined(__linux__) || defined(__nuttx__)
+#define NANOCLR_VALIDATE_HEAP NANOCLR_VALIDATE_HEAP_0_None
+#endif
+
 //-o-//-o-//-o-//-o-//-o-//-o-//
 // RULES AND DEPENDENCIES
 //-o-//-o-//-o-//-o-//-o-//-o-//
@@ -112,7 +117,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // TRACE DEPENDENCIES
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 #define NANOCLR_OPCODE_NAMES
 #define NANOCLR_OPCODE_PARSER
 #define NANOCLR_OPCODE_STACKCHANGES
@@ -142,7 +147,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // LANGUAGE
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__linux__) || defined(__nuttx__)
 #define PROHIBIT_ALL_CONSTRUCTORS(cls)                                                                                 \
   private:                                                                                                             \
     cls();                                                                                                             \
@@ -166,6 +171,11 @@
 
 #define LONGLONGCONSTANT(v)  (v##I64)
 #define ULONGLONGCONSTANT(v) (v##UI64)
+#endif
+
+#if defined(__linux__) || defined(__nuttx__)
+#define LONGLONGCONSTANT(v)  (v##ll)
+#define ULONGLONGCONSTANT(v) (v##ull)
 #endif
 
 #if defined(PLATFORM_ARM) | defined(PLATFORM_ESP32)

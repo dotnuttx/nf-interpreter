@@ -9,3 +9,6 @@
 // It has to exist here in order to keep Visual Studio C++ compiler happy //
 // to use pre-processed headers for WIN32 projects                        //
 ////////////////////////////////////////////////////////////////////////////
+
+
+typedef const char * LPCSTR;

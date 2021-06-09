@@ -73,18 +73,18 @@ HRESULT Library_corlib_native_System_BitConverter::GetBytes___STATIC__SZARRAY_U1
 
 HRESULT Library_corlib_native_System_BitConverter::GetBytes___STATIC__SZARRAY_U1__CHAR(CLR_RT_StackFrame &stack)
 {
-    NATIVE_PROFILE_CLR_CORE();
-    NANOCLR_HEADER();
+	NATIVE_PROFILE_CLR_CORE();
+	NANOCLR_HEADER();
 
-    wchar_t input = stack.Arg0().NumericByRefConst().u2;
+	char input = stack.Arg0().NumericByRefConst().u2;
 
-    NANOCLR_CHECK_HRESULT(
+	NANOCLR_CHECK_HRESULT(
         CLR_RT_HeapBlock_Array::CreateInstance(stack.PushValueAndClear(), 2, g_CLR_RT_WellKnownTypes.m_UInt8));
-    {
-        unsigned char *p = stack.TopValue().DereferenceArray()->GetFirstElement();
-        *reinterpret_cast<wchar_t *>(p) = input;
-    }
-    NANOCLR_NOCLEANUP();
+	{
+		unsigned char* p = stack.TopValue().DereferenceArray()->GetFirstElement();
+		*reinterpret_cast<char*>(p) = input;
+	}
+	NANOCLR_NOCLEANUP();
 }
 
 HRESULT Library_corlib_native_System_BitConverter::GetBytes___STATIC__SZARRAY_U1__R8(CLR_RT_StackFrame &stack)
