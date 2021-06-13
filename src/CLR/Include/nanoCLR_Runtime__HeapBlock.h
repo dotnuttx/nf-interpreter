@@ -66,8 +66,7 @@
 //
 struct CLR_RT_HeapBlock_Raw
 {
-// in fact it should be defined architecture dependent
-#if defined(__linux__)
+#if INTPTR_MAX == INT64_MAX
     CLR_UINT32 data[6];
 #else
     CLR_UINT32 data[3];
