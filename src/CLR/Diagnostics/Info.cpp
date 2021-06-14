@@ -233,7 +233,7 @@ void CLR_Debug::Emit(const char *text, int len)
             HAL_Windows_Debug_Print(s_buffer);
 #endif
 
-#if defined(__linux__) || defined(__nutxx__)
+#if defined(__linux__) || defined(__nuttx__)
             HAL_Windows_Debug_Print(s_buffer);
 #endif
 
