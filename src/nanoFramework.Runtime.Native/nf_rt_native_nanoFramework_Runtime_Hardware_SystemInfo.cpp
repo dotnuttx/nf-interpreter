@@ -46,11 +46,26 @@ HRESULT Library_nf_rt_native_nanoFramework_Runtime_Native_SystemInfo::get_OEMStr
 
     NANOCLR_HEADER();
     {
+#if !defined(__linux__) && !defined(__nuttx__)
         NFReleaseInfo releaseInfo;
 
         Target_GetReleaseInfo(releaseInfo);
 
         NANOCLR_SET_AND_LEAVE(stack.SetResult_String((char *)releaseInfo.InfoString));
+#else
+    // posix
+    struct utsname unameData;
+    char info[325];
+
+    uname(&unameData);
+    sprintf(info, "%s %s %s %s %s", unameData.sysname,
+                                 unameData.nodename,
+                                 unameData.release,
+                                 unameData.version,
+                                 unameData.machine);
+
+    NANOCLR_SET_AND_LEAVE(stack.SetResult_String((char *)info));
+#endif
     }
 
     NANOCLR_NOCLEANUP();
@@ -121,11 +136,22 @@ HRESULT Library_nf_rt_native_nanoFramework_Runtime_Native_SystemInfo::get_Platfo
 
     NANOCLR_HEADER();
 
+#if !defined(__linux__) && !defined(__nuttx__)
     NFReleaseInfo releaseInfo;
 
     Target_GetReleaseInfo(releaseInfo);
 
     NANOCLR_SET_AND_LEAVE(stack.SetResult_String((char *)releaseInfo.PlatformName));
+#else
+    // posix
+    struct utsname unameData;
+    char info[130];
+
+    uname(&unameData);
+    sprintf(info, "%s-%s", unameData.sysname, unameData.machine);
+
+    NANOCLR_SET_AND_LEAVE(stack.SetResult_String((char *)info));
+#endif
 
     NANOCLR_NOCLEANUP();
 }

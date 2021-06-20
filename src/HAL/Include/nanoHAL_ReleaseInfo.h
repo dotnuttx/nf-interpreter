@@ -8,6 +8,10 @@
 
 #include <nanoPackStruct.h>
 
+#if defined(__linux__) || defined(__nuttx__)
+#include <sys/utsname.h>
+#endif
+
 struct __nfpack NFVersion
 {
     unsigned short usMajor;
