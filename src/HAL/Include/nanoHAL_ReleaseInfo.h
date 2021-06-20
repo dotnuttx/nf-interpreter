@@ -8,8 +8,14 @@
 
 #include <nanoPackStruct.h>
 
-#if defined(__linux__) || defined(__nuttx__)
+#if defined(__linux__)
 #include <sys/utsname.h>
+#endif
+
+#if defined(__nuttx__)
+extern "C" {
+#include <sys/utsname.h>
+}
 #endif
 
 struct __nfpack NFVersion

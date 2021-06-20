@@ -56,8 +56,9 @@ HRESULT Library_nf_rt_native_nanoFramework_Runtime_Native_SystemInfo::get_OEMStr
     // posix
     struct utsname unameData;
     char info[325];
+    int ret;
 
-    uname(&unameData);
+    ret = uname(&unameData);
     sprintf(info, "%s %s %s %s %s", unameData.sysname,
                                  unameData.nodename,
                                  unameData.release,
@@ -146,8 +147,9 @@ HRESULT Library_nf_rt_native_nanoFramework_Runtime_Native_SystemInfo::get_Platfo
     // posix
     struct utsname unameData;
     char info[130];
+    int ret;
 
-    uname(&unameData);
+    ret = uname(&unameData);
     sprintf(info, "%s-%s", unameData.sysname, unameData.machine);
 
     NANOCLR_SET_AND_LEAVE(stack.SetResult_String((char *)info));
