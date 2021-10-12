@@ -7,7 +7,7 @@
 #ifndef NANOHAL_V2_H
 #define NANOHAL_V2_H
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__linux__) && !defined(__nuttx__)
 
 // need to include stdlib.h **BEFORE** redefining malloc/free/realloc otherwise bad things happen
 #include <stdlib.h>
