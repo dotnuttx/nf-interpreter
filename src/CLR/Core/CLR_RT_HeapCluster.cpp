@@ -66,7 +66,7 @@ void CLR_RT_HeapCluster::HeapCluster_Initialize( CLR_UINT32 size, CLR_UINT32 blo
             }
         }
 
-        if((unsigned int)(ptr + blockSize) > (unsigned int)end)
+        if((uintptr_t)(ptr + blockSize) > (uintptr_t)end)
         {
             blockSize = (CLR_UINT32)(end - ptr);
         }
@@ -77,7 +77,7 @@ void CLR_RT_HeapCluster::HeapCluster_Initialize( CLR_UINT32 size, CLR_UINT32 blo
     
     while(ptr < m_payloadEnd)
     {
-        if((unsigned int)(ptr + blockSize) > (unsigned int)m_payloadEnd)
+        if((uintptr_t)(ptr + blockSize) > (uintptr_t)m_payloadEnd)
         {
             blockSize = (CLR_UINT32)(m_payloadEnd - ptr);
         }

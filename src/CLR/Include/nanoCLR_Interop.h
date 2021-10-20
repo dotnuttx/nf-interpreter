@@ -389,7 +389,7 @@ UNSUPPORTED_TYPE &Interop_Marshal_GetField_UNSUPPORTED_TYPE( CLR_RT_HeapBlock *p
 **              [pContext] - Pointer to the context that should be passed to the ISR ( INterrupt Service Routine ).
 **              [userData] - User data passed to constructor of NativeEventDispatcher.
 **********************************************************************/
-typedef HRESULT (*InitializeInterruptsProc     )( CLR_RT_HeapBlock_NativeEventDispatcher *pContext, unsigned __int64 userData );
+typedef HRESULT (*InitializeInterruptsProc     )( CLR_RT_HeapBlock_NativeEventDispatcher *pContext, uint64_t userData );
 
 /**********************************************************************
 ** EnableorDisableInterruptsProc

@@ -302,7 +302,7 @@ bool CLR_RT_EventCache::VirtualMethodTable::FindVirtualMethod(
     }
 #endif
 
-#ifdef defined(__linux__) || defined(__nuttx__)
+#if defined(__linux__) || defined(__nuttx__)
     if(fVerify != false)
     {
         CLR_Debug::Printf( 
