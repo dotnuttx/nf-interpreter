@@ -2485,10 +2485,17 @@ struct CLR_RT_StackFrame : public CLR_RT_HeapBlock_Node // EVENT HEAP - NO RELOC
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
 
+#if INTPTR_MAX == INT64_MAX
+CT_ASSERT(offsetof(CLR_RT_StackFrame, m_owningThread) + sizeof(CLR_UINT64) == offsetof(CLR_RT_StackFrame, m_evalStack))
+CT_ASSERT(offsetof(CLR_RT_StackFrame, m_evalStack) + sizeof(CLR_UINT64) == offsetof(CLR_RT_StackFrame, m_arguments))
+CT_ASSERT(offsetof(CLR_RT_StackFrame, m_arguments) + sizeof(CLR_UINT64) == offsetof(CLR_RT_StackFrame, m_locals))
+CT_ASSERT(offsetof(CLR_RT_StackFrame, m_locals) + sizeof(CLR_UINT64) == offsetof(CLR_RT_StackFrame, m_IP))
+#else
 CT_ASSERT(offsetof(CLR_RT_StackFrame, m_owningThread) + sizeof(CLR_UINT32) == offsetof(CLR_RT_StackFrame, m_evalStack))
 CT_ASSERT(offsetof(CLR_RT_StackFrame, m_evalStack) + sizeof(CLR_UINT32) == offsetof(CLR_RT_StackFrame, m_arguments))
 CT_ASSERT(offsetof(CLR_RT_StackFrame, m_arguments) + sizeof(CLR_UINT32) == offsetof(CLR_RT_StackFrame, m_locals))
 CT_ASSERT(offsetof(CLR_RT_StackFrame, m_locals) + sizeof(CLR_UINT32) == offsetof(CLR_RT_StackFrame, m_IP))
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -3875,8 +3882,13 @@ extern CLR_UINT32 g_buildCRC;
 //
 // CT_ASSERT macro generates a compiler error in case the size of any structure changes.
 //
+#if INTPTR_MAX == INT64_MAX
+CT_ASSERT(sizeof(CLR_RT_HeapBlock) == 24)
+CT_ASSERT(sizeof(CLR_RT_HeapBlock_Raw) == sizeof(CLR_RT_HeapBlock))
+#else
 CT_ASSERT(sizeof(CLR_RT_HeapBlock) == 12)
 CT_ASSERT(sizeof(CLR_RT_HeapBlock_Raw) == sizeof(CLR_RT_HeapBlock))
+#endif
 
 #if defined(NANOCLR_TRACE_MEMORY_STATS)
 #define NANOCLR_TRACE_MEMORY_STATS_EXTRA_SIZE 4
@@ -3885,7 +3897,11 @@ CT_ASSERT(sizeof(CLR_RT_HeapBlock_Raw) == sizeof(CLR_RT_HeapBlock))
 #endif
 
 #if defined(__GNUC__) // Gcc compiler uses 8 bytes for a function pointer
+#if INTPTR_MAX == INT64_MAX
+CT_ASSERT(sizeof(CLR_RT_DataTypeLookup) == 32 + NANOCLR_TRACE_MEMORY_STATS_EXTRA_SIZE)
+#else
 CT_ASSERT(sizeof(CLR_RT_DataTypeLookup) == 20 + NANOCLR_TRACE_MEMORY_STATS_EXTRA_SIZE)
+#endif
 
 #elif defined(PLATFORM_WINDOWS_EMULATOR) || defined(NANOCLR_TRACE_MEMORY_STATS)
 CT_ASSERT(sizeof(CLR_RT_DataTypeLookup) == 16 + 4)

@@ -275,7 +275,11 @@ typedef struct GNU_PACKED SOCK_sockaddr_in
     char sin_zero[8];
 } SOCK_sockaddr_in;
 
+#if INTPTR_MAX == INT64_MAX
+CT_ASSERT_UNIQUE_NAME(sizeof(SOCK_sockaddr_in) == 20, SOCK_SOCKADDR_IN)
+#else
 CT_ASSERT_UNIQUE_NAME(sizeof(SOCK_sockaddr_in) == 16, SOCK_SOCKADDR_IN)
+#endif
 
 typedef struct SOCK_addrinfo
 {

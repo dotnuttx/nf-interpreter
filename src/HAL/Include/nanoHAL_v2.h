@@ -344,7 +344,7 @@ extern "C"
 // It is not a problem in global scope, but if macro is used inside of struct - it generates warnings.
 // CT_ASSERT_UNIQUE_NAME is the same in essence, but it provides a way to customize the name of the type.
 // TODO: check this __nuttx__ __linux__
-#define CT_ASSERT_UNIQUE_NAME(e, name) typedef char __CT_ASSERT__##name[(e) ? 1 : 1];
+#define CT_ASSERT_UNIQUE_NAME(e, name) typedef char __CT_ASSERT__##name[(e) ? 1 : -1];
 #define CT_ASSERT(e)                   CT_ASSERT_UNIQUE_NAME(e, nanoclr)
 #endif
 
