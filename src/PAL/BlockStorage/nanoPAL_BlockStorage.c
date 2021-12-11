@@ -463,7 +463,7 @@ bool BlockStorageStream_Read(BlockStorageStream* stream, unsigned char** buffer,
     return true;
 }
 
-unsigned int BlockStorageStream_CurrentAddress(BlockStorageStream *stream)
+uintptr_t BlockStorageStream_CurrentAddress(BlockStorageStream *stream)
 {
     return stream->BaseAddress + stream->CurrentIndex;
 }

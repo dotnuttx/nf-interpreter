@@ -67,7 +67,7 @@
 struct CLR_RT_HeapBlock_Raw
 {
 #if INTPTR_MAX == INT64_MAX
-    CLR_UINT32 data[6];
+    CLR_UINT64 data[3];
 #else
     CLR_UINT32 data[3];
 #endif

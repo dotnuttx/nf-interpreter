@@ -84,6 +84,10 @@
 #pragma pack(push, NANOCLR_TYPES_H, 4)
 #endif
 
+#if defined(__GNUC__)
+#pragma pack(push, 8)
+#endif
+
 enum CLR_OPCODE
 {
 #define OPDEF(c, s, pop, push, args, type, l, s1, s2, ctrl) c,
@@ -1314,6 +1318,10 @@ struct CLR_RECORD_RESOURCE
 
 #if defined(_MSC_VER)
 #pragma pack(pop, NANOCLR_TYPES_H)
+#endif
+
+#if defined(__GNUC__)
+#pragma pack(pop)
 #endif
 
 #endif // NANOCLR_TYPES_H

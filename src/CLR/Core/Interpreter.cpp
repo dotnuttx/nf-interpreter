@@ -7,7 +7,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if defined(NANOCLR_TRACE_EXCEPTIONS) && (defined(_WIN32) || defined(__linux__) || defined(__nuttx__))
+#if defined(NANOCLR_TRACE_EXCEPTIONS) && defined(PLATFORM_WINDOWS_EMULATOR) && (defined(_WIN32) || defined(__linux__) || defined(__nuttx__))
 
 struct BackTrackExecution
 {

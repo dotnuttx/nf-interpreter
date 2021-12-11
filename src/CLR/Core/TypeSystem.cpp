@@ -1505,6 +1505,7 @@ void CLR_RT_Assembly::Assembly_Initialize(CLR_RT_Assembly::Offsets &offsets)
 {
     NATIVE_PROFILE_CLR_CORE();
     CLR_UINT8 *buffer = (CLR_UINT8 *)this;
+    uintptr_t ptr;
     int i;
 
     m_szName = GetString(m_header->assemblyName);
@@ -1529,6 +1530,10 @@ void CLR_RT_Assembly::Assembly_Initialize(CLR_RT_Assembly::Offsets &offsets)
 #if !defined(NANOCLR_APPDOMAINS)
     m_pStaticFields = (CLR_RT_HeapBlock *)buffer;
     buffer += offsets.iStaticFields;
+    // make sure that we are 8bit aligned
+    ptr = (uintptr_t)(void *)m_pStaticFields;
+    ptr = (ptr + 8 -1) & ~(8-1);
+    m_pStaticFields = (CLR_RT_HeapBlock *)ptr;
 
     memset(m_pStaticFields, 0, offsets.iStaticFields);
 #endif

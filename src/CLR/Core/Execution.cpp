@@ -534,10 +534,8 @@ HRESULT CLR_RT_ExecutionEngine::CreateEntryPointArgs(CLR_RT_HeapBlock &argsBlk, 
     CLR_RT_HeapBlock_Array *array;
     CLR_UINT32 iArg = 0;
 
-    char *szArgNext = NULL;
     char *szArg = szCommandLineArgs;
     const char *sep = " ";
-    char *context = NULL;
 
     szArg = strtok(szArg, sep);
 

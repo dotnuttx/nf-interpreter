@@ -39,8 +39,8 @@
 
 // In flash media the distinction between a block and a sector is important
 // so we define the sector address to make it clear.
-typedef unsigned int ByteAddress;
-typedef unsigned int SectorAddress;
+typedef uintptr_t ByteAddress;
+typedef uintptr_t SectorAddress;
 
 //////////////////////////////////////////////////////////
 // Description:
@@ -564,8 +564,8 @@ extern "C"
     bool BlockStorageStream_Erase(BlockStorageStream *stream, unsigned int length);
     bool BlockStorageStream_ReadIntoBuffer(BlockStorageStream *stream, unsigned char *buffer, unsigned int length);
     bool BlockStorageStream_Read(BlockStorageStream *stream, unsigned char **buffer, unsigned int length);
-    unsigned int BlockStorageStream_CurrentAddress(BlockStorageStream *stream);
-    unsigned int BlockStorageStream_CurrentMappedAddress(BlockStorageStream *stream);
+    uintptr_t BlockStorageStream_CurrentAddress(BlockStorageStream *stream);
+    uintptr_t BlockStorageStream_CurrentMappedAddress(BlockStorageStream *stream);
     bool BlockStorageStream_IsErased(BlockStorageStream *stream, unsigned int length);
 
 #ifdef __cplusplus

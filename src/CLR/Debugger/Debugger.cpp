@@ -879,9 +879,9 @@ void CLR_DBG_Debugger::AccessMemory(
         if (proceed)
 #else
 
-        unsigned int sectAddrEnd = sectAddr + lengthInBytes;
-        unsigned int ramStartAddress = HalSystemConfig.RAM1.Base;
-        unsigned int ramEndAddress = ramStartAddress + HalSystemConfig.RAM1.Size;
+        uintptr_t sectAddrEnd = sectAddr + lengthInBytes;
+        uintptr_t ramStartAddress = HalSystemConfig.RAM1.Base;
+        uintptr_t ramEndAddress = ramStartAddress + HalSystemConfig.RAM1.Size;
 
         if ((sectAddr < ramStartAddress) || (sectAddr >= ramEndAddress) || (sectAddrEnd > ramEndAddress))
         {
